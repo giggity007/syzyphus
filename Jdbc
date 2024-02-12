@@ -124,3 +124,45 @@ BEGIN
 END ProcessJsonArray;
 /
 
+
+CREATE OR REPLACE PROCEDURE ProcessJsonArray(p_json_array IN owa.vc_arr) AS
+  -- Declare arrays for keys and values
+  TYPE key_array_t IS TABLE OF VARCHAR2(4000) INDEX BY PLS_INTEGER;
+  TYPE value_array_t IS TABLE OF VARCHAR2(4000) INDEX BY PLS_INTEGER;
+  keys key_array_t;
+  values value_array_t;
+
+  -- Declare a string to store the result
+  l_result VARCHAR2(4000);
+
+  -- Declare JSON variables
+  l_json JSON_OBJECT_T := JSON_OBJECT_T(p_json_array(1));
+  l_keys JSON_KEY_LIST;
+  l_value JSON_ELEMENT_T;
+
+BEGIN
+  -- Get the array of keys
+  l_keys := l_json.get_keys;
+
+  -- Iterate through JSON keys and values
+  FOR i IN 1..l_keys.COUNT LOOP
+    keys(i) := l_keys(i);
+
+    -- Store keys and values in separate arrays
+    l_value := l_json.get(keys(i));
+    values(i) := l_value.to_string;
+  END LOOP;
+
+  -- Concatenate key-value pairs into a string
+  FOR i IN 1..keys.count LOOP
+    l_result := l_result || keys(i) || '-' || values(i);
+    IF i < keys.count THEN
+      l_result := l_result || ', ';
+    END IF;
+  END LOOP;
+
+  -- Print the result using DBMS_OUTPUT
+  DBMS_OUTPUT.PUT_LINE(l_result);
+
+END ProcessJsonArray;
+/
