@@ -1,0 +1,96 @@
+import { LitElement, html, css } from 'lit';
+import { FormRegistrar, loadDefaultFeedbackMessages } from '@lion/form';
+import { LionInput } from '@lion/input';
+import { LionButton } from '@lion/button';
+
+class MyForm extends LitElement {
+  static styles = css`
+    :host {
+      display: block;
+      max-width: 400px;
+      margin: auto;
+    }
+
+    .error-message {
+      color: red;
+      margin-top: 10px;
+    }
+  `;
+
+  constructor() {
+    super();
+    loadDefaultFeedbackMessages();
+    this.formData = {};
+    this.validationErrors = [];
+  }
+
+  handleInputChange(event) {
+    const { name, value } = event.target;
+    this.formData[name] = value;
+  }
+
+  async handleFormSubmit() {
+    // Assuming you have a server-side endpoint to handle form data
+    try {
+      const response = await fetch('/your-server-endpoint', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(this.formData),
+      });
+
+      const responseData = await response.json();
+
+      if (response.ok) {
+        // Handle success
+      } else {
+        this.validationErrors = responseData.errors || [];
+        this.requestUpdate();
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error);
+    }
+  }
+
+  render() {
+    return html`
+      <form @submit="${(e) => e.preventDefault()}">
+        <lion-input
+          name="username"
+          label="Username"
+          @input="${this.handleInputChange}"
+        ></lion-input>
+
+        <lion-input
+          name="email"
+          label="Email"
+          @input="${this.handleInputChange}"
+        ></lion-input>
+
+        <lion-button @click="${this.handleFormSubmit}">Submit</lion-button>
+      </form>
+
+      ${this.validationErrors.length
+        ? html`
+            <div class="error-message">
+              <p>Validation errors:</p>
+              <ul>
+                ${this.validationErrors.map(
+                  (error) => html`<li>${error}</li>`
+                )}
+              </ul>
+            </div>
+          `
+        : ''}
+    `;
+  }
+}
+
+customElements.define('my-form', MyForm);
+
+FormRegistrar(
+  () => document.querySelector('my-form')
+).then(() => {
+  console.log('Form registration successful');
+});
