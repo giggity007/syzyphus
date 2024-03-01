@@ -1,0 +1,27 @@
+import { css } from 'lit';
+
+export const sharedStyles = css`
+  fieldset {
+    border: 1px solid #ccc;
+    margin-bottom: 20px;
+    padding: 10px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .cell {
+    flex: 1;
+    margin: 5px;
+  }
+
+  @media screen and (max-width: 992px) {
+    .cell {
+      flex: 1 100%;
+    }
+  }
+`;
