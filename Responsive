@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    fieldset {
+      border: 1px solid #ccc;
+      margin-bottom: 20px;
+      padding: 10px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+    }
+
+    .cell {
+      flex: 1;
+      margin: 5px;
+    }
+
+    @media screen and (max-width: 992px) {
+      .cell {
+        flex: 1 100%;
+      }
+    }
+  </style>
+  <script type="module">
+    import { LitElement, html, css } from 'https://cdn.pika.dev/lit-element@2.4.0';
+
+    class MyComponent extends LitElement {
+      static styles = css`
+        :host {
+          display: block;
+        }
+      `;
+
+      render() {
+        return html`
+          <fieldset>
+            <div class="row">
+              <div class="cell"></div>
+              <div class="cell">
+                <label for="input1">Label 1</label>
+                <lion-input id="input1"></lion-input>
+              </div>
+              <div class="cell">
+                <label for="input2">Label 2</label>
+                <lion-input id="input2"></lion-input>
+              </div>
+              <div class="cell">
+                <label for="input3">Label 3</label>
+                <lion-input id="input3"></lion-input>
+              </div>
+              <div class="cell">
+                <label for="input4">Label 4</label>
+                <lion-input id="input4"></lion-input>
+              </div>
+            </div>
+            <div class="row">
+              <div class="cell"></div>
+              <div class="cell">
+                <label for="input5">Label 5</label>
+                <lion-input id="input5"></lion-input>
+              </div>
+              <div class="cell">
+                <label for="input6">Label 6</label>
+                <lion-input id="input6"></lion-input>
+              </div>
+              <div class="cell">
+                <label for="input7">Label 7</label>
+                <lion-input id="input7"></lion-input>
+              </div>
+              <div class="cell">
+                <label for="input8">Label 8</label>
+                <lion-input id="input8"></lion-input>
+              </div>
+            </div>
+          </fieldset>
+          <!-- Repeat the structure for additional fieldsets -->
+        `;
+      }
+    }
+
+    customElements.define('my-component', MyComponent);
+  </script>
+</head>
+<body>
+  <my-component></my-component>
+</body>
+</html>
