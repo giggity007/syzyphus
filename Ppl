@@ -1,0 +1,21 @@
+steps:
+- checkout: self
+
+- task: PowerShell@2
+  inputs:
+    targetType: 'inline'
+    script: |
+      # Get the contents of the text file from a specific folder in the repository
+      $fileContents = Get-Content -Path $(Build.SourcesDirectory)/path/to/text/file.txt
+      
+      # Log in to the Windows Server 2019 remote host using CAL account Active Directory
+      # Replace 'your-cal-username' and 'your-cal-password' with your CAL account credentials
+      $cred = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList 'your-cal-username', (ConvertTo-SecureString -String 'your-cal-password' -AsPlainText -Force)
+      
+      # Replace 'your-remote-host' with the IP address or hostname of your remote host
+      $session = New-PSSession -ComputerName 'your-remote-host' -Credential $cred
+      
+      # Upload the text file to a specified location on the remote host using SCP
+      # Replace 'your-remote-destination-folder' with the destination folder on the remote host
+      # Make sure you have SSH installed on the Windows Server and SCP configured
+      Copy-Item -Path $(Build.SourcesDirectory)/path/to/text/file.txt -Destination '/your-remote-destination-folder' -ToSession $session
