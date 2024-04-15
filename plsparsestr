@@ -1,0 +1,37 @@
+CREATE OR REPLACE PROCEDURE ParseString(
+    p_input_string IN VARCHAR2,
+    p_code_word IN VARCHAR2,
+    p_out_string1 OUT VARCHAR2,
+    p_out_string2 OUT VARCHAR2,
+    p_out_string3 OUT VARCHAR2,
+    p_out_string4 OUT VARCHAR2,
+    p_out_string5 OUT VARCHAR2
+)
+IS
+    v_start_index NUMBER;
+    v_end_index NUMBER;
+    v_remaining_string VARCHAR2(4000);
+BEGIN
+    v_remaining_string := p_input_string;
+    
+    -- Parse the string five times to extract substrings between forward slashes and the code word
+    FOR i IN 1..5 LOOP
+        -- Find the index of the first forward slash
+        v_start_index := INSTR(v_remaining_string, '/');
+        
+        -- Find the index of the code word
+        v_end_index := INSTR(v_remaining_string, p_code_word);
+        
+        -- Extract the substring between the forward slash and the code word
+        IF v_start_index > 0 AND v_end_index > 0 THEN
+            p_out_string1 := SUBSTR(v_remaining_string, v_start_index + 1, v_end_index - v_start_index - 1);
+            
+            -- Remove the extracted substring and the forward slash from the remaining string
+            v_remaining_string := SUBSTR(v_remaining_string, v_end_index + LENGTH(p_code_word));
+        ELSE
+            -- If no forward slash or code word found, set the output string to null
+            p_out_string1 := NULL;
+        END IF;
+    END LOOP;
+END;
+/
