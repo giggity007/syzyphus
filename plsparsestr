@@ -1,37 +1,46 @@
-CREATE OR REPLACE PROCEDURE ParseString(
+CREATE OR REPLACE PROCEDURE parse_string (
     p_input_string IN VARCHAR2,
-    p_code_word IN VARCHAR2,
-    p_out_string1 OUT VARCHAR2,
-    p_out_string2 OUT VARCHAR2,
-    p_out_string3 OUT VARCHAR2,
-    p_out_string4 OUT VARCHAR2,
-    p_out_string5 OUT VARCHAR2
-)
-IS
-    v_start_index NUMBER;
-    v_end_index NUMBER;
-    v_remaining_string VARCHAR2(4000);
+    p_code_word    IN VARCHAR2,
+    p_output1      OUT VARCHAR2,
+    p_output2      OUT VARCHAR2,
+    p_output3      OUT VARCHAR2,
+    p_output4      OUT VARCHAR2,
+    p_output5      OUT VARCHAR2
+) AS
+    l_start_index  NUMBER;
+    l_end_index    NUMBER;
 BEGIN
-    v_remaining_string := p_input_string;
-    
-    -- Parse the string five times to extract substrings between forward slashes and the code word
+    -- Initialize output variables
+    p_output1 := NULL;
+    p_output2 := NULL;
+    p_output3 := NULL;
+    p_output4 := NULL;
+    p_output5 := NULL;
+
+    -- Find the start index of the first forward slash ("/")
+    l_start_index := INSTR(p_input_string, '/');
+
+    -- Extract substrings between forward slashes ("/") and the code word
     FOR i IN 1..5 LOOP
-        -- Find the index of the first forward slash
-        v_start_index := INSTR(v_remaining_string, '/');
+        -- Find the end index of the substring
+        l_end_index := INSTR(p_input_string, p_code_word, l_start_index + 1);
         
-        -- Find the index of the code word
-        v_end_index := INSTR(v_remaining_string, p_code_word);
-        
-        -- Extract the substring between the forward slash and the code word
-        IF v_start_index > 0 AND v_end_index > 0 THEN
-            p_out_string1 := SUBSTR(v_remaining_string, v_start_index + 1, v_end_index - v_start_index - 1);
-            
-            -- Remove the extracted substring and the forward slash from the remaining string
-            v_remaining_string := SUBSTR(v_remaining_string, v_end_index + LENGTH(p_code_word));
-        ELSE
-            -- If no forward slash or code word found, set the output string to null
-            p_out_string1 := NULL;
+        -- If the code word is not found, use the end of the string as the end index
+        IF l_end_index = 0 THEN
+            l_end_index := LENGTH(p_input_string) + 1;
         END IF;
+
+        -- Extract the substring between forward slashes ("/") and the code word
+        IF l_start_index > 0 THEN
+            -- Extract the substring between forward slashes ("/")
+            p_output1 := SUBSTR(p_input_string, l_start_index + 1, l_end_index - l_start_index - 1);
+        END IF;
+
+        -- Find the start index of the next forward slash ("/")
+        l_start_index := INSTR(p_input_string, '/', l_end_index + 1);
+
+        -- Exit loop if no more forward slashes ("/") are found
+        EXIT WHEN l_start_index = 0;
     END LOOP;
 END;
 /
