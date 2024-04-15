@@ -1,0 +1,83 @@
+CREATE OR REPLACE PROCEDURE extract_substrings (
+    p_input_string IN VARCHAR2,
+    p_output1      OUT VARCHAR2,
+    p_output2      OUT VARCHAR2,
+    p_output3      OUT VARCHAR2,
+    p_output4      OUT VARCHAR2,
+    p_error_msg    OUT VARCHAR2
+) AS
+    l_codewords    SYS.ODCIVARCHAR2LIST := SYS.ODCIVARCHAR2LIST('/CrtVg/', '/QdhMiFuq/', '/FckPs/', '/HrpsGnrq/');
+    l_indices      SYS.ODCIINDEXLIST;
+    l_start_index  PLS_INTEGER;
+    l_end_index    PLS_INTEGER;
+    l_count        PLS_INTEGER;
+BEGIN
+    -- Initialize output variables
+    p_output1 := NULL;
+    p_output2 := NULL;
+    p_output3 := NULL;
+    p_output4 := NULL;
+    p_error_msg := NULL;
+
+    -- Find indices of codewords
+    FOR i IN 1..l_codewords.COUNT LOOP
+        l_indices(i) := INSTR(p_input_string, l_codewords(i));
+    END LOOP;
+
+    -- Count the number of codewords found
+    l_count := l_indices.COUNT;
+
+    -- Check for duplicate codewords
+    FOR i IN 1..l_count LOOP
+        FOR j IN i + 1..l_count LOOP
+            IF l_indices(i) = l_indices(j) AND l_indices(i) > 0 THEN
+                p_error_msg := 'Error: Duplicate codewords found';
+                RETURN;
+            END IF;
+        END LOOP;
+    END LOOP;
+
+    -- Check if no codewords are found
+    IF l_count = 0 THEN
+        p_error_msg := 'Error: No codewords found';
+        RETURN;
+    END IF;
+
+    -- Sort codeword indices
+    FOR i IN 1..l_count LOOP
+        FOR j IN i + 1..l_count LOOP
+            IF l_indices(i) > l_indices(j) THEN
+                l_start_index := l_indices(i);
+                l_indices(i) := l_indices(j);
+                l_indices(j) := l_start_index;
+            END IF;
+        END LOOP;
+    END LOOP;
+
+    -- Extract substrings between codewords or between last codeword and end of string
+    FOR i IN 1..l_count LOOP
+        IF i = 1 THEN
+            l_start_index := l_indices(i) + LENGTH(l_codewords(i));
+        ELSE
+            l_start_index := l_indices(i - 1) + LENGTH(l_codewords(i - 1));
+        END IF;
+
+        IF i < l_count THEN
+            l_end_index := l_indices(i);
+        ELSE
+            l_end_index := LENGTH(p_input_string) + 1;
+        END IF;
+
+        CASE i
+            WHEN 1 THEN
+                p_output1 := SUBSTR(p_input_string, l_start_index, l_end_index - l_start_index);
+            WHEN 2 THEN
+                p_output2 := SUBSTR(p_input_string, l_start_index, l_end_index - l_start_index);
+            WHEN 3 THEN
+                p_output3 := SUBSTR(p_input_string, l_start_index, l_end_index - l_start_index);
+            WHEN 4 THEN
+                p_output4 := SUBSTR(p_input_string, l_start_index, l_end_index - l_start_index);
+        END CASE;
+    END LOOP;
+END;
+/
