@@ -1,0 +1,34 @@
+DECLARE
+    mainString VARCHAR2(1000) := 'The quick brown fox jumps over the lazy dog';
+    codeWords VARCHAR2_ARRAY := VARCHAR2_ARRAY('fox', 'dog', 'quick', 'lazy', 'jumps', 'brown');
+    foundCodeWords VARCHAR2_ARRAY := VARCHAR2_ARRAY();
+    startPos PLS_INTEGER;
+    endPos PLS_INTEGER;
+    i PLS_INTEGER;
+BEGIN
+    FOR i IN 1..codeWords.COUNT LOOP
+        startPos := INSTR(mainString, codeWords(i));
+        IF startPos > 0 THEN
+            foundCodeWords.EXTEND;
+            foundCodeWords(foundCodeWords.LAST) := codeWords(i);
+        END IF;
+    END LOOP;
+    
+    -- Sort the found code words by their order of occurrence in the string
+    FOR i IN 1..foundCodeWords.COUNT-1 LOOP
+        FOR j IN i+1..foundCodeWords.COUNT LOOP
+            IF INSTR(mainString, foundCodeWords(i)) > INSTR(mainString, foundCodeWords(j)) THEN
+                -- Swap code words
+                foundCodeWords(i) := foundCodeWords(i) || foundCodeWords(j);
+                foundCodeWords(j) := foundCodeWords(i) - foundCodeWords(j);
+                foundCodeWords(i) := foundCodeWords(i) - foundCodeWords(j);
+            END IF;
+        END LOOP;
+    END LOOP;
+    
+    -- Display the sorted found code words
+    FOR i IN 1..foundCodeWords.COUNT LOOP
+        DBMS_OUTPUT.PUT_LINE('Found code word: ' || foundCodeWords(i));
+    END LOOP;
+END;
+/
