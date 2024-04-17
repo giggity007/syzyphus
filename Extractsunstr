@@ -1,0 +1,31 @@
+CREATE OR REPLACE PROCEDURE ExtractSubstrings (
+    mainString IN VARCHAR2,
+    codeWords IN VARCHAR2_ARRAY,
+    substrings OUT SYS.ODCIVARCHAR2LIST
+)
+IS
+    startPos PLS_INTEGER;
+    endPos PLS_INTEGER;
+    codeWordIndex PLS_INTEGER;
+BEGIN
+    substrings := SYS.ODCIVARCHAR2LIST();
+
+    -- Loop through each code word
+    FOR i IN 1..codeWords.COUNT LOOP
+        startPos := INSTR(mainString, codeWords(i));
+        
+        IF startPos > 0 THEN
+            -- Find end position of substring
+            IF i < codeWords.COUNT THEN
+                endPos := INSTR(mainString, codeWords(i+1), startPos + LENGTH(codeWords(i)));
+            ELSE
+                endPos := LENGTH(mainString) + 1;
+            END IF;
+            
+            -- Add substring to the output list
+            substrings.EXTEND;
+            substrings(substrings.LAST) := SUBSTR(mainString, startPos + LENGTH(codeWords(i)), endPos - startPos - LENGTH(codeWords(i)));
+        END IF;
+    END LOOP;
+END;
+/
