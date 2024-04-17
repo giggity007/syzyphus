@@ -1,0 +1,19 @@
+DECLARE
+    mainString VARCHAR2(100) := 'This is a test string. This string is for testing purposes only.';
+    substringToCount VARCHAR2(20) := 'string';
+    occurrencesCount NUMBER := 0;
+    startPos NUMBER := 1;
+BEGIN
+    LOOP
+        startPos := INSTR(mainString, substringToCount, startPos);
+        IF startPos = 0 THEN
+            EXIT; -- No more occurrences of substring found
+        END IF;
+        
+        occurrencesCount := occurrencesCount + 1;
+        startPos := startPos + LENGTH(substringToCount);
+    END LOOP;
+
+    DBMS_OUTPUT.PUT_LINE('Occurrences of substring: ' || occurrencesCount);
+END;
+/
