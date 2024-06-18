@@ -1,0 +1,27 @@
+{
+  "manifest_version": 2,
+  "name": "QR Code Reader",
+  "version": "1.0",
+  "description": "Reads QR codes from images on webpages and sends the data to an API.",
+  "permissions": [
+    "activeTab",
+    "storage"
+  ],
+  "browser_action": {
+    "default_popup": "popup.html",
+    "default_icon": "icon.png"
+  },
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ],
+  "icons": {
+    "128": "icon.png"
+  }
+}
