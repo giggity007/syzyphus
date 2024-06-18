@@ -1,0 +1,68 @@
+// Load jsQR library from CDN
+const script = document.createElement('script');
+script.src = 'https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.js';
+document.head.appendChild(script);
+
+function readQRCodeAndSendData() {
+  // Ensure jsQR is loaded
+  if (typeof jsQR === 'undefined') {
+    alert('jsQR library is not loaded yet.');
+    return;
+  }
+
+  // Get all images on the page
+  const images = document.querySelectorAll('img[src^="data:image/gif;base64"]');
+
+  images.forEach((img) => {
+    // Create a canvas element
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+
+    // Set canvas dimensions to match the image
+    canvas.width = img.width;
+    canvas.height = img.height;
+
+    // Draw the image onto the canvas
+    context.drawImage(img, 0, 0, img.width, img.height);
+
+    // Get the image data from the canvas
+    const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+
+    // Decode the QR code using jsQR
+    const code = jsQR(imageData.data, imageData.width, imageData.height);
+
+    if (code) {
+      console.log('Found QR code', code.data);
+
+      // Parse the QR code data to find sessionId
+      let qrData;
+      try {
+        qrData = JSON.parse(code.data);
+        if (qrData && qrData.sessionId) {
+          console.log('Session ID:', qrData.sessionId);
+
+          // Send the image data and sessionId to the API
+          fetch('YOUR_API_ENDPOINT', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ imageData: img.src, sessionId: qrData.sessionId })
+          })
+          .then(response => response.json())
+          .then(data => console.log('Success:', data))
+          .catch((error) => console.error('Error:', error));
+        } else {
+          console.log('sessionId not found in QR code data');
+        }
+      } catch (error) {
+        console.error('Error parsing QR code data:', error);
+      }
+    } else {
+      console.log('No QR code found in image:', img);
+    }
+  });
+}
+
+// Expose the function to the global scope
+window.readQRCodeAndSendData = readQRCodeAndSendData;
