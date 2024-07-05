@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Logout after Inactivity</title>
+</head>
+<body>
+    <iframe id="f1" src="frame1.html"></iframe>
+    <iframe id="f2" src="frame2.html"></iframe>
+    <iframe id="f3" src="frame3.html"></iframe>
+    <iframe id="f4" src="frame4.html"></iframe>
+
+    <script type="text/javascript">
+        var timeoutDuration = 10000; // 10 seconds
+        var timeoutId;
+
+        function resetTimer() {
+            clearTimeout(timeoutId);
+            timeoutId = setTimeout(logout, timeoutDuration);
+            console.log("Timer reset");
+        }
+
+        function logout() {
+            alert("You have been logged out due to inactivity.");
+            // Perform the logout operation here
+            window.location.href = "logout.html";
+        }
+
+        function attachEventListeners(element) {
+            var events = ['mousemove', 'keypress', 'click', 'scroll'];
+            for (var i = 0; i < events.length; i++) {
+                element.addEventListener(events[i], resetTimer);
+            }
+        }
+
+        function initialize() {
+            console.log("Initializing event listeners");
+
+            // Attach event listeners to the main window
+            attachEventListeners(document);
+
+            // Attach event listeners to each iframe
+            var iframes = ['f1', 'f2', 'f3', 'f4'];
+            for (var i = 0; i < iframes.length; i++) {
+                var iframe = document.getElementById(iframes[i]);
+                if (iframe) {
+                    iframe.onload = (function(iframe) {
+                        return function() {
+                            try {
+                                console.log("Attaching event listeners to iframe: " + iframe.id);
+                                attachEventListeners(iframe.contentWindow.document);
+                                // Also attach event listeners to the iframe window itself
+                                attachEventListeners(iframe.contentWindow);
+                            } catch (e) {
+                                console.error("Could not attach event listeners to iframe: " + iframe.id, e);
+                            }
+                        };
+                    })(iframe);
+                }
+            }
+
+            // Start the timer initially
+            resetTimer();
+        }
+
+        document.addEventListener('DOMContentLoaded', initialize);
+    </script>
+</body>
+</html>
