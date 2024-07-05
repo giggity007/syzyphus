@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Logout after Inactivity</title>
+</head>
+<body>
+    <iframe id="f1" src="frame1.html"></iframe>
+    <iframe id="f2" src="frame2.html"></iframe>
+    <iframe id="f3" src="frame3.html"></iframe>
+    <iframe id="f4" src="frame4.html"></iframe>
+
+    <script type="text/javascript">
+        var inactivityTime = function () {
+            var time;
+            var timeoutDuration = 10000; // 10 seconds
+
+            function resetTimer() {
+                clearTimeout(time);
+                time = setTimeout(logout, timeoutDuration);
+            }
+
+            function logout() {
+                alert("You have been logged out due to inactivity.");
+                // Perform the logout operation here
+                // e.g., redirect to a logout page or clear session data
+                window.location.href = "logout.html";
+            }
+
+            // List of events to listen to for resetting the timer
+            var events = ['mousemove', 'keypress', 'click', 'scroll'];
+
+            // Function to attach event listeners to the document and iframes
+            function attachEventListeners() {
+                for (var i = 0; i < events.length; i++) {
+                    document.addEventListener(events[i], resetTimer);
+                }
+
+                var iframes = ['f1', 'f2', 'f3', 'f4'];
+                for (var j = 0; j < iframes.length; j++) {
+                    var iframe = document.getElementById(iframes[j]);
+                    if (iframe) {
+                        iframe.contentWindow.addEventListener('mousemove', resetTimer);
+                        iframe.contentWindow.addEventListener('keypress', resetTimer);
+                        iframe.contentWindow.addEventListener('click', resetTimer);
+                        iframe.contentWindow.addEventListener('scroll', resetTimer);
+                    }
+                }
+            }
+
+            // Initialize event listeners
+            attachEventListeners();
+            resetTimer(); // Start the timer
+        };
+
+        window.onload = function () {
+            inactivityTime();
+        };
+    </script>
+</body>
+</html>
