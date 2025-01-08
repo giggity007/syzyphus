@@ -1,0 +1,73 @@
+import { html, LitElement } from 'lit';
+import { LionInput } from '@lion/input';
+import { css } from 'lit';
+
+class MyInputWithBackendValidation extends LitElement {
+  static styles = css`
+    .error-message {
+      color: red;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .tooltip {
+      visibility: hidden;
+      background-color: black;
+      color: white;
+      text-align: center;
+      padding: 5px;
+      border-radius: 5px;
+      position: absolute;
+      z-index: 1;
+      top: 25px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .error-message:hover .tooltip {
+      visibility: visible;
+    }
+  `;
+
+  render() {
+    return html`
+      <lion-input
+        label="Enter Value"
+        .validators="${[new BackendValidator('extraValue')]}">
+        <template slot="feedback">
+          ${this.feedbackTemplate()}
+        </template>
+      </lion-input>
+    `;
+  }
+
+  feedbackTemplate() {
+    return html`
+      ${this.errorMessage
+        ? html`
+            <span class="error-message">
+              ${this.errorMessage.message}
+              <span class="tooltip">${this.errorMessage.tooltip}</span>
+            </span>
+          `
+        : ''}
+    `;
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+    this.addEventListener('validate', this.updateFeedback);
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    this.removeEventListener('validate', this.updateFeedback);
+  }
+
+  updateFeedback(e) {
+    this.errorMessage = e.detail.results.find((res) => res.message);
+    this.requestUpdate();
+  }
+}
+
+customElements.define('my-input-with-backend-validation', MyInputWithBackendValidation);
