@@ -1,0 +1,45 @@
+import { html, css, LitElement } from 'lit';
+
+class LionInputComponent extends LitElement {
+  static properties = {
+    readonly: { type: Boolean },
+    boldText: { type: Boolean },
+  };
+
+  constructor() {
+    super();
+    this.readonly = false; // Default to editable
+    this.boldText = false;
+
+    // Check the URL for the pattern
+    const url = new URL(window.location.href);
+    if (url.searchParams.get('readonly') === 'true') {
+      this.readonly = true; // Make the input readonly
+      this.boldText = true; // Apply bold text
+    }
+  }
+
+  static styles = css`
+    lion-input {
+      font-weight: normal;
+    }
+    lion-input[readonly] {
+      font-weight: bold;
+      background-color: lightgray;
+      color: black;
+    }
+  `;
+
+  render() {
+    return html`
+      <lion-input
+        .readonly=${this.readonly}
+        style=${this.boldText
+          ? 'font-weight: bold; background-color: lightgray; color: black;'
+          : ''}
+      ></lion-input>
+    `;
+  }
+}
+
+customElements.define('lion-input-component', LionInputComponent);
