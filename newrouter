@@ -1,0 +1,62 @@
+import { LitElement, html } from 'lit';
+
+class AppRouter extends LitElement {
+  constructor() {
+    super();
+    this.route = ''; // Store current route
+    this.routes = [
+      {
+        id: 'home',
+        pattern: '/home',
+        scopedElements: {
+          'home-page': () =>
+            import('./components/home/home.js').then(module => module.HomePage),
+        },
+      },
+      {
+        id: 'about',
+        pattern: '/about',
+        scopedElements: {
+          'about-page': () =>
+            import('./components/about/about.js').then(module => module.AboutPage),
+        },
+      },
+    ];
+    window.addEventListener('hashchange', () => this._handleRouteChange());
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+    this._handleRouteChange(); // Initialize with current hash
+  }
+
+  async _handleRouteChange() {
+    const hash = window.location.hash.replace('#!/', ''); // Extract route from hash
+    const route = this.routes.find(route => hash.match(route.pattern)); // Match hash to route pattern
+
+    if (route) {
+      this.route = route; // Set the matched route
+      const tagName = Object.keys(route.scopedElements)[0]; // Extract the first scoped element's tag
+      if (!customElements.get(tagName)) {
+        await route.scopedElements[tagName](); // Dynamically import and define the element
+      }
+      this.requestUpdate(); // Re-render
+    } else {
+      console.error(`Route "${hash}" not found`);
+      this.route = null;
+      this.requestUpdate();
+    }
+  }
+
+  render() {
+    return html`
+      ${this.route
+        ? html`<${Object.keys(this.route.scopedElements)[0]}></${Object.keys(
+            this.route.scopedElements
+          )[0]}>`
+        : html`<div>Page not found</div>`}
+    `;
+  }
+}
+
+customElements.define('app-root', AppRouter);
