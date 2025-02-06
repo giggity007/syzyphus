@@ -1,0 +1,81 @@
+import { LitElement, html, css } from 'lit';
+import { pathToRegexp } from 'path-to-regexp';
+
+export class LionRouter extends LitElement {
+  static properties = {
+    routes: { type: Array },
+    currentView: { type: String },
+    params: { type: Object },
+  };
+
+  static styles = css`
+    :host {
+      display: block;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+    :host(.show) {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  `;
+
+  constructor() {
+    super();
+    this.routes = [];
+    this.currentView = '';
+    this.params = {};
+
+    window.addEventListener('hashchange', () => this.handleRouteChange());
+    this.handleRouteChange(); // Load initial route
+  }
+
+  addRoute(path, component, beforeEnter = null) {
+    const keys = [];
+    const regex = pathToRegexp(path, keys);
+    this.routes.push({ regex, keys, component, beforeEnter });
+  }
+
+  async handleRouteChange() {
+    const hashPath = window.location.hash.startsWith('#!') 
+      ? window.location.hash.replace('#!', '') 
+      : '/';
+
+    this.classList.remove('show');
+
+    setTimeout(async () => {
+      for (const route of this.routes) {
+        const matchResult = route.regex.exec(hashPath);
+        if (matchResult) {
+          const params = {};
+          route.keys.forEach((key, index) => {
+            params[key.name] = matchResult[index + 1];
+          });
+
+          // Route Guard Check
+          if (route.beforeEnter) {
+            const shouldProceed = await route.beforeEnter();
+            if (!shouldProceed) {
+              window.location.hash = `#!/login`;
+              return;
+            }
+          }
+
+          this.currentView = route.component;
+          this.params = params;
+          this.classList.add('show');
+          return;
+        }
+      }
+
+      this.currentView = 'lion-404';
+    }, 500);
+  }
+
+  render() {
+    return html`<${this.currentView} .params=${this.params}></${this.currentView}>`;
+  }
+}
+
+customElements.define('lion-router', LionRouter);
