@@ -1,0 +1,12 @@
+import './lion-router.js';
+
+const router = document.querySelector('lion-router');
+
+// **Mock Authentication**
+const isAuthenticated = () => localStorage.getItem('user') === 'logged_in';
+
+// **Add Routes**
+router.addRoute('/home', 'home-view');
+router.addRoute('/login', 'login-view');
+router.addRoute('/profile/:id', 'profile-view', isAuthenticated);
+router.addRoute('/profile/:id/settings', 'profile-settings-view', isAuthenticated);
