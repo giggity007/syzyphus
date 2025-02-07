@@ -1,0 +1,19 @@
+<template>
+  <div id="error-list" role="alert">
+    <ul>
+      <template is="dom-repeat" items="{{errorMessages}}">
+        <li>{{item}}</li>
+      </template>
+    </ul>
+  </div>
+
+  <form id="myForm" @submit="${this.handleSubmit}">
+    <lion-input id="input" name="input" label="Input" required .value="${this.inputValue}"></lion-input>
+    <lion-select id="select" name="select" label="Select" required .value="${this.selectValue}">
+      <lion-option value="option1">Option 1</lion-option>
+      <lion-option value="option2">Option 2</lion-option>
+    </lion-select>
+    <lion-amount id="amount" name="amount" label="Amount" required .value="${this.amountValue}"></lion-amount>
+    <lion-button>Submit</lion-button>
+  </form>
+</template>
