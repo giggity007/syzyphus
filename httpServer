@@ -1,0 +1,91 @@
+var sys = require("util"),
+	fs = require("fs"),
+	path = require("path"),
+	url = require("url"),
+	http = require("http"),
+	https = require("https"),
+	exec = require("child_process").exec,
+	httpProxy = require("http-proxy"),
+	build_path = require("./../grunt/settings/settings.json"),
+	destination = {
+		backendTarget: {
+			target: function () {
+				var args = process.argv.slice(2);
+				switch (args[0]) {
+					case "dev":
+						console.log("---------------------- Connecting to <<<< DEVELOPMENT >>>> envoronment -------------------");
+						return "https://localhost:8443/";
+						default:
+						console.log("---------------------- Connecting to <<<< PROTOTYPE >>>> envoronment -------------------");
+						return "https://namaikati.net";
+				}
+			}(),
+			port: 8443,
+			agent: mySSLAgent()
+		},
+		frontendTarget: {
+			host: "localhost",
+			port: 8000
+		}
+	},
+	source = {
+		target: {
+			host: "localhost",
+			port: 8003
+		},
+		ssl: {
+			key: fs.readFileSync("secure-proxy/a.pem", "utf8"),
+			cert: fs.readFileSync("secure-proxy/b.pem", "utf8")
+		},
+		port: 443
+	};
+
+function mySSLAgent() {
+	var agent = new https.Agent({
+		rejectUnauthorized: false
+	});
+
+	return agent;
+}
+
+
+var proxy = httpProxy.createProxyServer();
+
+proxy.on("error", function (e) {
+	console.error("[Proxy]: " + e);
+});
+
+/*
+ * Proxy server with ssl/https implementation
+ */
+var mainServer = httpProxy.createServer({
+	target: source.target,
+	ssl: source.ssl,
+	ws: true
+});
+
+mainServer.on("error", function (e) {
+	console.error("[Main Server]: " + e);
+});
+
+mainServer.listen(source.port);
+
+
+/*
+ * Proxy server with routing logic
+ */
+var px = http.createServer(function (req, res) {
+	if (req.url.indexOf("/app/") === 0
+		|| req.url.indexOf("/dist/") === 0
+		|| req.url.indexOf("/" + build_path.dist.dir) === 0
+		|| req.url.indexOf("/favicon.ico") === 0) {
+		proxy.web(req, res, {
+			agent: false,
+			target: destination.frontendTarget
+		});
+	} else {
+		proxy.web(req, res, destination.backendTarget);
+	}
+});
+
+px.listen(source.target.port);
