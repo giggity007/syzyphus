@@ -1,0 +1,43 @@
+# upgrade-node.ps1
+Write-Host "Starting Node.js Upgrade..." -ForegroundColor Cyan
+
+# STEP 1: Check current versions
+node -v
+npm -v
+yarn -v
+grunt --version
+webpack --version
+
+# STEP 2: Clear npm/yarn cache
+npm cache clean --force
+yarn cache clean
+
+# STEP 3: Delete lock files and node_modules
+Write-Host "Removing lock files and node_modules..."
+Remove-Item -Recurse -Force node_modules
+Remove-Item -Force package-lock.json,yarn.lock
+
+# STEP 4: Download latest Node.js LTS
+Write-Host "Opening Node.js download page..."
+Start-Process "https://nodejs.org/en/download"
+
+# STEP 5: Prompt for manual install
+Read-Host "Install the new Node.js version manually, then press [Enter] to continue"
+
+# STEP 6: Confirm new versions
+Write-Host "Verifying versions..."
+node -v
+npm -v
+
+# STEP 7: Reinstall Yarn globally
+npm install -g yarn
+
+# STEP 8: Reinstall dependencies
+Write-Host "Reinstalling dependencies..."
+npm install
+
+# STEP 9: Run compatibility check
+Write-Host "Checking outdated packages..."
+npm outdated
+
+Write-Host "Upgrade Complete. Verify app build with: grunt or webpack"
