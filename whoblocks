@@ -1,0 +1,22 @@
+COL username FORMAT A15
+COL program FORMAT A30
+COL object_name FORMAT A30
+COL lock_mode FORMAT A15
+COL requested FORMAT A15
+
+SELECT s.sid,
+       s.serial#,
+       s.username,
+       s.program,
+       o.kglnaobj   AS object_name,
+       o.kglhdnsp   AS namespace,
+       DECODE(l.kgllkmod, 0,'None', 1,'Null', 2,'Share', 3,'Exclusive') AS lock_mode,
+       DECODE(l.kgllkreq, 0,'None', 1,'Null', 2,'Share', 3,'Exclusive') AS requested,
+       s.sql_id,
+       q.sql_text
+FROM v$session s
+JOIN x$kgllk l ON s.saddr = l.kgllkses
+JOIN x$kglob o ON l.kgllkhdl = o.kglhdadr
+LEFT JOIN v$sql q ON s.sql_id = q.sql_id
+WHERE l.kgllkreq > 0   -- sessions waiting
+   OR l.kgllkmod > 0;  -- sessions holding
