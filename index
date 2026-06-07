@@ -1,0 +1,85 @@
+<?php
+
+*Landing Page
+
+Spagetitle welcome My Book Shop
+
+SpageDescription. 'Discover amazing stories curated just for you. Browse our collection and find your next favorite read.
+
+require ance includes/header.php":
+
+// Get Featured book from database (if exists)
+
+try {
+
+$db getpe();
+
+$book $db->querySingle("SELECT FROM book WHERE id-1", true);
+
+catch (Exception Se)
+
+Sbook null;
+
+I
+
+<section class="hero">
+
+<div class="hero-cat">
+
+<img src="/assets/images/cat.jpg" alt="Our shop mascot
+
+</div>
+
+onerror="this.src='https://placecats.com/400/500>
+
+<div class="hero-content
+
+chtowelcome to Our Book Shop</h1>
+
+<p>Discover amazing stories curated just for you. Browse our collection and find your next favorite read.</p>
+
+<a href="/contact.php" class="btn-primary">Order Nowk/ax
+
+</div>
+
+</section>
+
+<section class="cards">
+
+<div class="card card-order">
+
+<div class="card-overlay"></div>
+
+<div class="card-content">
+
+<div class="card-icon"></div>
+
+<h2>Order</h2>
+
+<p>Place your order quickly and easily. We deliver right to your doorstep.</p>
+
+ca href/contact.php" class="card-link Start Order</a
+
+</div>
+
+</div>
+
+<div class="card card-about">
+
+<div class card-overlay"></div>
+
+<div class="card-content">
+
+<div class="card-icon"></div>
+
+<h2>About</h2>
+
+<p>Learn more about our story, our passion for books, and our mission, (/p)
+
+<a href="/about.php" class="card-link">Read More </a>
+
+div
+
+Q Search
+
+Shoumalni ne
