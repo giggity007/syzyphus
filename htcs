@@ -1,0 +1,106 @@
+
+#Security Rules for Book Shop
+
+Based on SECURITY.md guidelines
+
+Prevent direct access to sensitive files
+
+<FilesMatch "\.(db|sqlite sql|log|inilson|md)$">
+
+Order Allow, Deny
+
+Deny from all
+
+</FilesMatch>
+
+Prevent directory listing
+
+Options Indexes
+
+#Protect data folder
+
+<IfModule mod_rewrite.c>
+
+RewriteEngine On
+
+RewriteRule data/ [FL]
+
+RewriteRule ^logs/ [F.L]
+
+RewriteRule Includes/ [F.L
+
+</IfModule>
+
+#Force HTTPS (uncomment when 5SL is enabled)
+
+RewriteEngine On
+
+#RewriteCond %(HTTPS) off
+
+RewriteRule ^(.*)$ https://(HTTP HOST)(REQUEST URI) [L,R-301]
+
+Block bad bots from contact fors
+
+<IfModule mod rewrite.c>
+
+RewriteEngine On
+
+RewriteCond %(HTTP_USER_AGENT)(bot crawl spider|scraper) *$ [NC]
+
+RewriteCond %{HTTP_USER_AGENT) 1.(googlebot [bingbot [yandex duckduckbot).$ [NC]
+
+RewriteRule (contact.php]api/) [FL]
+
+</IfModule>
+
+Security headers
+
+<IfModule mod headers.c
+
+Prevent clickjacking
+
+Header always set X-Frase-Options "SAMEORIGIN
+
+#Prevent HIME-type sniffing
+
+Header always set X-Content-Type-Options "nosniff"
+
+Enable X55 filter
+
+Header always set X-XSS-Protection "1; mode-block"
+
+Referrer policy
+
+Header always set Referrer-Policy "strict-origin-when-cross-origin
+
+# Content Security Policy
+
+Header always set Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self';"
+
+#Permissions policy
+
+Header always set Permissions-Policy "geolocation-(), microphone=(), camera-()"
+
+</IfModule>
+
+#Cache static assets
+
+<IfModule mod_expires.c>
+
+ExpiresActive On
+
+ExpiresByType image/jpg "access plus 1 month"
+
+ExpiresByType image/jpeg "access plus 1 month"
+
+ExpiresByType image/png "access plus 1 month"
+
+ExpiresByType image/gif "access plus 1 month"
+
+ExpiresByType image/webp "access plus 1 month"
+
+ExpiresByType text/css "access plus 1 week"
+
+ExpiresByType application/javascript "access plus 1 week"
+
+</IfModule>
