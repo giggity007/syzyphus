@@ -1,0 +1,83 @@
+<?php
+
+/**
+
+* Database Setup Script
+
+*/
+
+RUN ONCE, THEN DELETE THIS FILE
+
+wid
+
+// Uncomment the next line after first run to disable
+
+// die('This script has been disabled. Delete this file for security,
+
+require_once_DIR'/includes/db.php';
+
+try {
+
+$db = getDB();
+
+// Create tables
+
+$db->exec("
+
+CREATE TABLE IF NOT EXISTS pages (
+
+); id INTEGER PRIMARY KEY AUTOINCREMENT, slug TEXT UNIQUE NOT NULL, title TEXT NOT NULL, content TEXT, created at DATETIME DEFAULT CURRENT TIMESTAMP, updated_at DATETIME DEFAULT CURRENT TIMESTAMP
+
+CREATE TABLE IF NOT EXISTS gallery images (
+
+10 INTEGER PRIMARY KEY AUTOINCREMENT,
+
+); filename TEXT NOT NULL, caption TEXT, display_order INTEGER DEFAULT 8, created at DATETIME DEFAULT CURRENT TIMESTAMP
+
+CREATE TABLE IF NOT EXISTS contact submissions (
+
+id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+name TEXT NOT NULL, email TEXT NOT NULL, subject TEXT, message TEXT NOT NULL, submitted at DATETIME DEFAULT CURRENT TIMESTAMP, is read INTEGER DEFAULT 0
+);
+");
+
+echo "<!DOCTYPE html>
+
+<html>
+
+<head><title>Setup Complete</title></head>
+
+<body style='font-family: sans-serif; max-width: 600px; margin: 50px auto; padding: 20px;'>
+
+<h1 style='color: green;'> Database Setup Complete!</h1>
+
+<p>Tables created successfully:</p>
+
+<ul>
+
+<li>pages</li>
+
+<li>gallery_images</li>
+
+<li>contact submissions</li>
+
+<li>book</li>
+
+</ul>
+
+<p><strong>IMPORTANT:</strong> Delete this file (setup_db.php) for security!</p>
+
+<p><a href='/'>Go to Homepage →</a></p>
+
+</body>
+
+</html>";
+
+} catch (Exception: $e) {
+
+I
+
+echo "Error: " htmlspecialchars($e->getMessage());
+
+}
